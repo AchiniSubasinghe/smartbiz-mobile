@@ -9,26 +9,37 @@ import { signUp } from "../api/auth";
 export default function RegisterScreen() {
   const router = useRouter();
 
-  const [businessName, setBusinessName] = useState("");
-  const [ownerName, setOwnerName] = useState("");
+  const [username, setUserName] = useState("");
+  const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
 
-  const handleRegister = () => {
-    if (!businessName || !ownerName || !email || !password) {
+  const handleRegister = async() => {
+    if (!username || !fullName || !email || !password) {
       Alert.alert("Error", "Please fill all fields");
       return;
     }
 
-    if (password !== confirmPassword) {
-      Alert.alert("Error", "Passwords do not match");
-      return;
-    }
+    try {
+      const res = await signUp({
+        username,
+        fullName,
+        email,
+        password,
+      });
 
-    console.log({ businessName, ownerName, email, password });
-    Alert.alert("Success", "Account created");
-    router.replace("/");
+      if (res.data.success) {
+        Alert.alert("Success", "Account created successfully");
+        router.replace("/");
+      }
+    } catch (err: any) {
+      console.log("SIGNUP ERROR ", err?.response?.data);
+
+      Alert.alert(
+        "Registration Failed",
+        err?.response?.data?.message || "Something went wrong"
+      );
+    }
   };
 
   return (
@@ -50,16 +61,16 @@ export default function RegisterScreen() {
 
           <TextInput
             style={styles.input}
-            placeholder="Business Name"
-            value={businessName}
-            onChangeText={setBusinessName}
+            placeholder="`Username"
+            value={username}
+            onChangeText={setUserName}
           />
 
           <TextInput
             style={styles.input}
-            placeholder="Owner Name"
-            value={ownerName}
-            onChangeText={setOwnerName}
+            placeholder="Owners Full Name"
+            value={fullName}
+            onChangeText={setFullName}
           />
 
           <TextInput
@@ -77,14 +88,6 @@ export default function RegisterScreen() {
             secureTextEntry
             value={password}
             onChangeText={setPassword}
-          />
-
-          <TextInput
-            style={styles.input}
-            placeholder="Confirm Password"
-            secureTextEntry
-            value={confirmPassword}
-            onChangeText={setConfirmPassword}
           />
 
           <TouchableOpacity style={styles.button} onPress={handleRegister}>
