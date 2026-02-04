@@ -1,18 +1,30 @@
 import React, { useState } from "react";
 import {
-  View, Text, TextInput, TouchableOpacity, StyleSheet, KeyboardAvoidingView, Platform, Image
+  View, Text, TextInput, TouchableOpacity, StyleSheet, KeyboardAvoidingView, Platform, Image, ScrollView
 } from "react-native";
 import { useRouter } from "expo-router";
-import { ScrollView } from "react-native";
+import { signIn } from "../api/auth";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { Alert } from "react-native";
 
 export default function LoginScreen() {
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const handleLogin = () => {
-    console.log({ email, password });
-    router.replace("/dashboard");
+  const handleLogin = async () => {
+    try {
+      const res = await signIn(email, password);
+      const token = res.data.data.token;
+      await AsyncStorage.setItem("token", token);
+      router.replace("/dashboard");
+      
+    } catch (err: any) {
+      Alert.alert(
+        "Login Failed",
+        err?.response?.data?.message || "Invalid credentials"
+      );
+    }
   };
 
   return (
@@ -24,42 +36,42 @@ export default function LoginScreen() {
         contentContainerStyle={styles.container}
         keyboardShouldPersistTaps="handled"
       >
-      <View style={styles.card}>
-        <Image
-          source={require("../assets/images/logo.png")}
-          style={styles.logo}
-        />
+        <View style={styles.card}>
+          <Image
+            source={require("../assets/images/logo.png")}
+            style={styles.logo}
+          />
 
-        <Text style={styles.subtitle}>Sign in to manage your business</Text>
+          <Text style={styles.subtitle}>Sign in to manage your business</Text>
 
-        <TextInput
-          style={styles.input}
-          placeholder="Email"
-          keyboardType="email-address"
-          autoCapitalize="none"
-          value={email}
-          onChangeText={setEmail}
-        />
+          <TextInput
+            style={styles.input}
+            placeholder="Email"
+            keyboardType="email-address"
+            autoCapitalize="none"
+            value={email}
+            onChangeText={setEmail}
+          />
 
-        <TextInput
-          style={styles.input}
-          placeholder="Password"
-          secureTextEntry
-          value={password}
-          onChangeText={setPassword}
-        />
+          <TextInput
+            style={styles.input}
+            placeholder="Password"
+            secureTextEntry
+            value={password}
+            onChangeText={setPassword}
+          />
 
-        <TouchableOpacity style={styles.button} onPress={handleLogin}>
-          <Text style={styles.buttonText}>Sign In</Text>
-        </TouchableOpacity>
+          <TouchableOpacity style={styles.button} onPress={handleLogin}>
+            <Text style={styles.buttonText}>Sign In</Text>
+          </TouchableOpacity>
 
-        <Text style={styles.footerText}>
-          Don’t have an account?{" "}
-          <Text style={styles.link} onPress={() => router.push("/register")}>
-            Register
+          <Text style={styles.footerText}>
+            Don’t have an account?{" "}
+            <Text style={styles.link} onPress={() => router.push("/register")}>
+              Register
+            </Text>
           </Text>
-        </Text>
-      </View>
+        </View>
       </ScrollView>
     </KeyboardAvoidingView>
   );
