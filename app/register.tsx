@@ -1,16 +1,7 @@
 import React, { useState } from "react";
-import {
-  View,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  StyleSheet,
-  KeyboardAvoidingView,
-  Platform,
-  ScrollView,
-  Alert,
-} from "react-native";
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, KeyboardAvoidingView, Platform, ScrollView, Alert, Image } from "react-native";
 import { useRouter } from "expo-router";
+
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { signUp } from "../api/auth";
 
@@ -47,6 +38,11 @@ export default function RegisterScreen() {
     >
       <ScrollView contentContainerStyle={{ flexGrow: 1, justifyContent: "center" }}>
         <View style={styles.card}>
+
+          <Image
+            source={require("../assets/images/logo.png")}
+            style={styles.logo}
+          />
           <Text style={styles.title}>Create Account</Text>
           <Text style={styles.subtitle}>
             Start managing your business with SmartBiz
@@ -110,7 +106,13 @@ export default function RegisterScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-   
+
+  },
+  logo: {
+    width: 200,
+    height: 60,
+    alignSelf: "center",
+    resizeMode: "contain",
   },
   card: {
     backgroundColor: "#ffffff",
